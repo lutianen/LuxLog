@@ -164,7 +164,7 @@ $ ./LuxLoggerExample1
 
     - 在执行交换缓冲区的时候，可能会有前台线程写入日志，因此这个步骤需要在 Lock 的状态下执行
 
-    - ×× 这个双缓冲机制的前后台日志系统，需要锁定的代码仅仅是交换两个缓冲区这个动作，Lock 的时间是极其短暂的！这就是它提高吞吐量的关键所在！ ××
+    - **这个双缓冲机制的前后台日志系统，需要锁定的代码仅仅是交换两个缓冲区这个动作，Lock 的时间是极其短暂的！这就是它提高吞吐量的关键所在！**
 
 3. C++ stream 风格：
 
@@ -340,7 +340,6 @@ $ ./LuxLoggerExample1
 
         ```c++
         void append(const char* /*restrict*/ buf, size_t len) {
-            // FIXME: append partially
             if (implicit_cast<size_t>(avail()) > len) {
                 memcpy(cur_, buf, len);
                 cur_ += len;
@@ -380,7 +379,7 @@ GCC 4.1.2版本之后，对X86或X86_64支持内置原子操作。
 
 - 根据GCC手册中《Using the GNU Compiler Collection (GCC)》章节内容，将__sync_系列17个函数声明整理简化如下：
 
-  - 将 value 和 *ptr 进行 加/减/或/与/异或/取反，结果更新到*ptr，并返回操作之前*ptr的值
+  - 将 `value` 和 `*ptr` 进行 加/减/或/与/异或/取反，结果更新到`*ptr`，并返回操作之前`*ptr`的值
 
     `type __sync_fetch_and_add (type *ptr, type value, ...)`
 
@@ -394,7 +393,7 @@ GCC 4.1.2版本之后，对X86或X86_64支持内置原子操作。
 
     `type __sync_fetch_and_nand (type *ptr, type value, ...)`
 
-  - 将 value 和 *ptr 进行 加/减/或/与/异或/取反，结果更新到*ptr，并返回操作之后*ptr的值
+  - 将 `value` 和 `*ptr` 进行 加/减/或/与/异或/取反，结果更新到`*ptr`，并返回操作之后`*ptr`的值
 
     `type __sync_add_and_fetch (type *ptr, type value, ...)`
 
@@ -408,11 +407,11 @@ GCC 4.1.2版本之后，对X86或X86_64支持内置原子操作。
 
     `type __sync_nand_and_fetch (type *ptr, type value, ...)`
 
-  - 比较 *ptr 与 oldval 的值，如果两者相等，则将newval更新到*ptr并返回true
+  - 比较 `*ptr` 与 `oldval` 的值，如果两者相等，则将`newval`更新到`*ptr`并返回`true`
 
     `bool __sync_bool_compare_and_swap (type *ptr, type oldval type newval, ...)`
 
-  - 比较*ptr与oldval的值，如果两者相等，则将newval更新到*ptr并返回操作之前*ptr的值
+  - 比较`*ptr`与`oldval`的值，如果两者相等，则将`newval`更新到`*ptr`并返回操作之前`*ptr`的值
 
     `ype __sync_val_compare_and_swap (type *ptr, type oldval type newval, ...)`
 
@@ -420,11 +419,11 @@ GCC 4.1.2版本之后，对X86或X86_64支持内置原子操作。
 
     `__sync_synchronize (...)`
 
-  - 将value写入*ptr，对*ptr加锁，并返回操作之前*ptr的值。即，try spinlock语义
+  - 将`value`写入`*ptr`，对`*ptr`加锁，并返回操作之前`*ptr`的值。即，try spinlock 语义
 
     `type __sync_lock_test_and_set (type *ptr, type value, ...)`
 
-  - 将0写入到*ptr，并对*ptr解锁。即，unlock spinlock语义
+  - 将`0`写入到`*ptr`，并对`*ptr`解锁。即，unlock spinlock语义
 
     `void __sync_lock_release (type *ptr, ...)`
 
@@ -432,7 +431,7 @@ GCC 4.1.2版本之后，对X86或X86_64支持内置原子操作。
 
   - 这个**type**不能乱用(type只能是int, long, long long以及对应的unsigned类型)，同时在用gcc编译的时候要加上选项 -march=i686。
 
-  - 后面的可扩展参数**(…)**用来指出哪些变量需要memory barrier，因为目前gcc实现的是full barrier(类似Linux kernel中的mb()，表示这个操作之前的所有内存操作不会被重排到这个操作之后)，所以可以忽略掉这个参数。
+  - 后面的可扩展参数(…)用来指出哪些变量需要memory barrier，因为目前gcc实现的是full barrier(类似Linux kernel中的mb()，表示这个操作之前的所有内存操作不会被重排到这个操作之后)，所以可以忽略掉这个参数。
 
 ---
 
