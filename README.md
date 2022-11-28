@@ -1,6 +1,6 @@
 # LuxLogger
 
-The Linux C++ AsyncLogger project, called LuxLogger, with inspiring from muduo.
+The Linux C++ AsyncLogger project, called LuxLogger, with inspiring from [muduo](github.com/chenshuo/muduo).
 
 异步日志系统，采用多线程模拟异步IO，使用双缓冲(Double Buffering)机制，运行时日志输出级别可调.
 
