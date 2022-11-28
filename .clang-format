@@ -1,0 +1,49 @@
+---
+# We'll use defaults from the LLVM style, but with 4 columns indentation.
+BasedOnStyle: LLVM
+IndentWidth: 4
+---
+Language: Cpp
+
+# Force pointers to the type for C++
+
+DerivePointerAlignment: false
+
+PointerAlignment: Left
+
+# 访问说明符(public、private等)的偏移
+AccessModifierOffset: -4
+
+# 对齐连续的尾随的注释
+AlignTrailingComments: true
+
+# 每行字符的限制，0表示没有限制
+ColumnLimit: 100
+
+# 如果为true，则clang格式会为短名称空间添加缺少的名称空间结尾注释，并修复无效的现有名称结束注释
+FixNamespaceComments: true
+
+# 命名空间的缩进: None, Inner(缩进嵌套的命名空间中的内容), All
+NamespaceIndentation: Inner
+
+# 连续空行的最大数量
+MaxEmptyLinesToKeep: 5
+
+# 在赋值运算符之前添加空格
+SpaceBeforeAssignmentOperators: true
+
+# 允许排序#include
+SortIncludes: false
+
+# 总是在template声明后换行
+AlwaysBreakTemplateDeclarations: true
+
+# false表示函数实参要么都在同一行，要么都各自一行
+BinPackArguments: false
+
+# 构造函数的初始化列表要么都在同一行，要么都各自一行
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+
+# 构造函数的初始化列表的缩进宽度
+ConstructorInitializerIndentWidth: 4
+---
