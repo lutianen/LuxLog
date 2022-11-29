@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(LuxLog VERSION 0.1.0)
 
+# Options
+option(LuxLog_BUILD_EXAMPLES "Build examples" ON)
+option(LuxLog_BUILD_TEST "Build tests" ON)
+
+# Release
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")
 endif()
@@ -67,16 +72,24 @@ target_link_libraries(LuxLog pthread)
 
 file(GLOB HEADERS "*.h")
 install(FILES ${HEADERS} DESTINATION LuxLog)
-
-# Examples
-add_executable(LuxLoggerExample1 example/example1.cc)
-target_link_libraries(LuxLoggerExample1 LuxLog)
-add_executable(LuxLoggerExample2 example/example2.cc)
-target_link_libraries(LuxLoggerExample2 LuxLog)
-add_executable(LuxLoggerExample3 example/example3.cc)
-target_link_libraries(LuxLoggerExample3 LuxLog)
  
+# Examples
+if (LuxLog_BUILD_EXAMPLES)
+    message("Build LuxLog Examples.")
+    add_executable(LuxLoggerExample1 example/example1.cc)
+    target_link_libraries(LuxLoggerExample1 LuxLog)
+    add_executable(LuxLoggerExample2 example/example2.cc)
+    target_link_libraries(LuxLoggerExample2 LuxLog)
+    add_executable(LuxLoggerExample3 example/example3.cc)
+    target_link_libraries(LuxLoggerExample3 LuxLog)
+else()
+    message("Don't Build LuxLog Examples.")
+endif()
+
 # Optional
-if(NOT BUILD_NO_TEST)
-  add_subdirectory(test)
+if(LuxLog_BUILD_TEST)
+    message("Build LuxLog tests.")
+    add_subdirectory(test)
+else()
+    message("Don't Build LuxLog tests.")
 endif()
