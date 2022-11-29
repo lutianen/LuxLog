@@ -1,24 +1,36 @@
 # LuxLogger
 
-The Linux C++ AsyncLogger project, called LuxLogger, with inspiring from [muduo](https://github.com/chenshuo/muduo).
+This is a Linux C++ AsyncLogger, called LuxLogger, with inspiring from [muduo](https://github.com/chenshuo/muduo).
 
 异步日志系统，采用多线程模拟异步IO，使用双缓冲(Double Buffering)机制，运行时日志输出级别可调.
 
 ---
 
-## Required
+## ADVANTAGES
 
-c++ 11/14/17
+- 高效
 
-CMake
+- C++ stream 风格
 
-g++/clang
+- 类型安全
+
+- 随用随写
+
+- 低级日志，运行时开销接近零
+  
+- 文件滚动 [文件大小、时间]
+
+- 支持 ini 配置
 
 ---
 
-## Dependency
+## Required
 
-`pthread`
+- c++ 11/14/17
+
+- CMake
+
+- g++/clang
 
 ---
 
@@ -106,6 +118,85 @@ g++/clang
     }
   ```
 
+- Example 3
+
+  ```c++
+    // Required headers
+    #include "src/AsyncLogger.h"
+    #include "src/Logger.h"
+    #include "src/LuxINI.hpp"
+
+    #include <cstdio>
+    #include <sys/resource.h>
+    #include <unistd.h>
+
+    // Global logger.
+    Lux::AsyncLogger* g_asyncLog = nullptr;
+
+    int
+    main(int argc, char** argv) {
+        {
+            // Optional: set max virtual memory to 2GB.
+            size_t kOneGB = 1000 * 1024 * 1024;
+
+            rlimit rl = {2 * kOneGB, 2 * kOneGB};
+            setrlimit(RLIMIT_AS, &rl);
+        }
+
+        // Read ini
+        Lux::INIParser::INI iniF("/home/tiann/LuxLogger/example/LuxLogger.ini");
+        // Lux::INIParser::INI iniF("/home/tiann/LuxLogger/example/LuxLogger.ini",
+        //                          "/home/tiann/LuxLogger/example/LuxLogger.ini");
+        Lux::INIParser::INIStructure iniC;
+        iniF.read(iniC);
+
+        // Configure logger
+        Lux::string name = iniC["LuxLogger"]["basename"];
+        off_t rollSize = atoi(iniC["LuxLogger"]["rollSize"].c_str());
+        int flushInterval = atoi(iniC["LuxLogger"]["flushInterval"].c_str());
+
+        Lux::AsyncLogger log(::basename(name.c_str()), rollSize, flushInterval);
+
+        // Set level of logger
+        Lux::Logger::setLogLevel(Lux::Logger::LogLevel::TRACE);
+
+        // set output Func, or use defalut.
+        Lux::Logger::setOutput([](const char* msg, int len) {
+            size_t n = ::fwrite(msg, 1, static_cast<size_t>(len), stdout);
+            assert(n == static_cast<size_t>(len));
+            if (n != static_cast<size_t>(len)) {
+                char _buf[128] = {};
+                ::snprintf(_buf, sizeof(_buf), "%s : %d - n should be equal len!!!", __FILE__, __LINE__);
+                ::perror(_buf);
+            }
+
+            g_asyncLog->append(msg, len);
+        });
+        g_asyncLog = &log;
+        log.start();
+
+        for (int i = 0; i < 10; ++i) {
+            LOG_TRACE << "this is log trace test"
+                      << " << " << i << " >>";
+            LOG_DEBUG << "this is log debug test"
+                      << " << " << i << " >>";
+            LOG_INFO << "this is log info test"
+                    << " << " << i << " >>";
+            LOG_WARN << "this is log warn test"
+                    << " << " << i << " >>";
+            LOG_ERROR << "this is log error test"
+                      << " << " << i << " >>";
+            LOG_SYSERR << "this is log syserr test"
+                      << " << " << i << " >>";
+        }
+
+        /* Wait backend thread write logs into file.
+        * Only needed when testing LuxLogger.
+        */
+        usleep(5000);
+    }
+  ```
+
 ---
 
 ## LogFileName
@@ -136,7 +227,7 @@ $ ./LuxLoggerExample1
 2022/11/28 09:24:10 113157 ERROR This is log SYSERR TEST - example1.cc:53
 ```
 
-## 优点
+## 优点解析
 
 1. 双缓冲机制为什么高效？
 
@@ -486,3 +577,11 @@ Cond(条件变量)，与互斥量一起使用，允许线程以无竞争的方�
 1. 前端负责往 Buffer A 中填数据（日志信息）
 2. 后端负责把 Buffer B 中数据写入文件
 3. ×× 当 Buffer A 写满后，交换 A 和 B，让后端将 Buffer A 中的数据写入文件，而前端则往 Buffer B 填入新的日志信息，如此反复 ××
+
+---
+
+## THANKS
+
+- [muduo](https://github.com/chenshuo/muduo)
+
+- [mINI](https://github.com/pulzed/mINI)

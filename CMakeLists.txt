@@ -73,7 +73,9 @@ add_executable(LuxLoggerExample1 example/example1.cc)
 target_link_libraries(LuxLoggerExample1 LuxLogger)
 add_executable(LuxLoggerExample2 example/example2.cc)
 target_link_libraries(LuxLoggerExample2 LuxLogger)
-
+add_executable(LuxLoggerExample3 example/example3.cc)
+target_link_libraries(LuxLoggerExample3 LuxLogger)
+ 
 # Optional
 if(NOT BUILD_NO_TEST)
   add_subdirectory(test)
