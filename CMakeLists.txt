@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(LuxLogger VERSION 0.1.0)
+project(LuxLog VERSION 0.1.0)
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")
@@ -62,19 +62,19 @@ set (SRC src/Condition.cc
         src/AsyncLogger.cc
         src/Logger.cc)
 # Library
-add_library(LuxLogger SHARED ${SRC})
-target_link_libraries(LuxLogger pthread)
+add_library(LuxLog SHARED ${SRC})
+target_link_libraries(LuxLog pthread)
 
 file(GLOB HEADERS "*.h")
-install(FILES ${HEADERS} DESTINATION LuxLogger)
+install(FILES ${HEADERS} DESTINATION LuxLog)
 
 # Examples
 add_executable(LuxLoggerExample1 example/example1.cc)
-target_link_libraries(LuxLoggerExample1 LuxLogger)
+target_link_libraries(LuxLoggerExample1 LuxLog)
 add_executable(LuxLoggerExample2 example/example2.cc)
-target_link_libraries(LuxLoggerExample2 LuxLogger)
+target_link_libraries(LuxLoggerExample2 LuxLog)
 add_executable(LuxLoggerExample3 example/example3.cc)
-target_link_libraries(LuxLoggerExample3 LuxLogger)
+target_link_libraries(LuxLoggerExample3 LuxLog)
  
 # Optional
 if(NOT BUILD_NO_TEST)
