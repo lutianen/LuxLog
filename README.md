@@ -1,6 +1,6 @@
-# LuxLogger
+# LuxLog
 
-This is a Linux C++ AsyncLogger, called LuxLogger, with inspiring from [muduo](https://github.com/chenshuo/muduo).
+This is a Linux C++ AsyncLogger, called LuxLog, with inspiring from [muduo](https://github.com/chenshuo/muduo).
 
 异步日志系统，采用多线程模拟异步IO，使用双缓冲(Double Buffering)机制，运行时日志输出级别可调.
 
@@ -144,9 +144,9 @@ This is a Linux C++ AsyncLogger, called LuxLogger, with inspiring from [muduo](h
         }
 
         // Read ini
-        Lux::INIParser::INI iniF("/home/tiann/LuxLogger/example/LuxLogger.ini");
-        // Lux::INIParser::INI iniF("/home/tiann/LuxLogger/example/LuxLogger.ini",
-        //                          "/home/tiann/LuxLogger/example/LuxLogger.ini");
+        Lux::INIParser::INI iniF("example/LuxLogger.ini");
+        // Lux::INIParser::INI iniF("example/LuxLogger.ini",
+        //                          "example/LuxLogger.ini");
         Lux::INIParser::INIStructure iniC;
         iniF.read(iniC);
 
