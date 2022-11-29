@@ -23,3 +23,5 @@ target_link_libraries(MutexTest LuxLogger)
 add_executable(ProcessInfoTest ProcessInfo_test.cc)
 target_link_libraries(ProcessInfoTest LuxLogger)
 
+add_executable(LuxINITest LuxINI_test.cc)
+target_link_libraries(LuxINITest LuxLogger)
