@@ -10,7 +10,7 @@
 #include "Logger.h"
 
 #include "Timestamp.h"
-#include "CurrentThread.h"  // tid
+#include "CurrentThread.h" // tid
 
 #include <ctime> // gmtime_r tm
 
@@ -36,12 +36,14 @@ __thread char t_errnobuf[512];
 __thread char t_time[64];
 __thread time_t t_lastSecond;
 
-const char* strerror_tl(int savedErrno) {
+const char*
+strerror_tl(int savedErrno) {
     return ::strerror_r(savedErrno, t_errnobuf, sizeof(t_errnobuf));
 }
 
 
-Logger::LogLevel initLogLevel() {
+Logger::LogLevel
+initLogLevel() {
     if (::getenv("Lux_LOG_TRACE"))
         return Logger::LogLevel::TRACE;
     else if (::getenv("Lux_LOG_DEBUG"))
@@ -54,7 +56,12 @@ Logger::LogLevel initLogLevel() {
 Logger::LogLevel g_logLevel = initLogLevel();
 
 const char* LogLevelName[static_cast<unsigned int>(Logger::LogLevel::NUM_LOG_LEVELS)] = {
-    "TRACE ", "DEBUG ", "INFO  ", "WARN  ", "ERROR ", "FATAL ",
+    "TRACE",
+    "DEBUG",
+    "INFO ",
+    "WARN ",
+    "ERROR",
+    "FATAL",
 };
 
 
@@ -67,12 +74,14 @@ public:
     const unsigned len_;
 };
 
-inline LogStream& operator<<(LogStream& s, T v) {
+inline LogStream&
+operator<<(LogStream& s, T v) {
     s.append(v.str_, static_cast<int>(v.len_));
     return s;
 }
 
-inline LogStream& operator<<(LogStream& s, const Logger::SourceFile& v) {
+inline LogStream&
+operator<<(LogStream& s, const Logger::SourceFile& v) {
     s.append(v.data_, v.size_);
     return s;
 }
@@ -80,10 +89,11 @@ inline LogStream& operator<<(LogStream& s, const Logger::SourceFile& v) {
 
 /**
  * @brief Default output Func.
- *  It push `msg` to `stdout`. 
+ *  It push `msg` to `stdout`.
  * @param msg Message
  */
-void defaultOutput(const char* msg, int len) {
+void
+defaultOutput(const char* msg, int len) {
     size_t n = ::fwrite(msg, 1, static_cast<size_t>(len), stdout);
 
     assert(n == static_cast<size_t>(len));
@@ -95,7 +105,10 @@ void defaultOutput(const char* msg, int len) {
 }
 
 
-void defaultFlush() { fflush(stdout); }
+void
+defaultFlush() {
+    fflush(stdout);
+}
 
 /* NOTE Global Outuput/Flush Function */
 Logger::OutputFunc g_output = defaultOutput;
@@ -110,10 +123,13 @@ Logger::Impl::Impl(LogLevel level, int savedErrno, const SourceFile& file, int l
     : time_(Timestamp::now()), stream_(), level_(level), line_(line), basename_(file) {
     formatTime();
     CurrentThread::tid();
-    stream_ << T(CurrentThread::tidString(),
-                 static_cast<unsigned int>(CurrentThread::tidStringLength()));
-    
+    stream_ << T(CurrentThread::tidString(), static_cast<unsigned int>(CurrentThread::tidStringLength()));
+
     stream_ << T(LogLevelName[static_cast<unsigned int>(level)], 6);
+
+    // Format Change: xxx - Channel_test.cc:104 -> Channel_test.cc:104 - Channel_test.cc:104
+    stream_ << basename_ << ':' << line_ << " -_- ";
+
     if (savedErrno != 0) {
         stream_ << strerror_tl(savedErrno) << " (errno=" << savedErrno << ") ";
     }
@@ -122,16 +138,23 @@ Logger::Impl::Impl(LogLevel level, int savedErrno, const SourceFile& file, int l
 
 
 /// @brief Put "YYYY/MM/DD hh:mm:ss " into stream
-void Logger::Impl::formatTime() {
+void
+Logger::Impl::formatTime() {
     int64_t secondsSinceEpoch = time_.secondsSinceEpoch();
     if (secondsSinceEpoch != t_lastSecond) {
         t_lastSecond = secondsSinceEpoch;
         struct tm tm_time {};
         ::gmtime_r(&secondsSinceEpoch, &tm_time);
 
-        int len = snprintf(t_time, sizeof(t_time), "%4d/%02d/%02d %02d:%02d:%02d",
-                           tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday,
-                           tm_time.tm_hour, tm_time.tm_min, tm_time.tm_sec);
+        int len = snprintf(t_time,
+                           sizeof(t_time),
+                           "%4d/%02d/%02d %02d:%02d:%02d",
+                           tm_time.tm_year + 1900,
+                           tm_time.tm_mon + 1,
+                           tm_time.tm_mday,
+                           tm_time.tm_hour,
+                           tm_time.tm_min,
+                           tm_time.tm_sec);
         assert(len == 19);
         (void)len;
     }
@@ -143,12 +166,15 @@ void Logger::Impl::formatTime() {
  * @brief 调用日志的文件和行号
  * e.g. LuCCLogger_TEST.cc:7
  */
-void Logger::Impl::finish() { stream_ << " - " << basename_ << ':' << line_ << '\n'; }
+void
+Logger::Impl::finish() {
+    // stream_ << " - " << basename_ << ':' << line_ << '\n';
+    stream_ << "\n";
+}
 
 Logger::Logger(SourceFile file, int line) : impl_(LogLevel::INFO, 0, file, line) {}
 
-Logger::Logger(SourceFile file, int line, LogLevel level, const char* func)
-    : impl_(level, 0, file, line) {
+Logger::Logger(SourceFile file, int line, LogLevel level, const char* func) : impl_(level, 0, file, line) {
     // impl_.stream_ << func << ' ';
     impl_.stream_ << func << "(..) ";
 }
@@ -169,8 +195,17 @@ Logger::~Logger() {
 }
 
 
-void Logger::setLogLevel(Logger::LogLevel level) { g_logLevel = level; }
+void
+Logger::setLogLevel(Logger::LogLevel level) {
+    g_logLevel = level;
+}
 
-void Logger::setOutput(OutputFunc out) { g_output = out; }
+void
+Logger::setOutput(OutputFunc out) {
+    g_output = out;
+}
 
-void Logger::setFlush(FlushFunc flush) { g_flush = flush; }
+void
+Logger::setFlush(FlushFunc flush) {
+    g_flush = flush;
+}
