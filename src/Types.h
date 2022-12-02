@@ -14,6 +14,8 @@
 #include <cstring> // memset
 #include <string>
 
+#include <functional>
+
 #ifndef NDEBUG
 #include <cassert> // assert
 #endif
@@ -23,11 +25,17 @@
 ///
 namespace Lux {
 using std::string;
+using std::placeholders::_1;
+using std::placeholders::_2;
+using std::placeholders::_3;
 
 /// @brief Set N bytes of S to zero.
 /// @param S void*
 /// @param N size_t
-inline void memZero(void* S, size_t N) { ::memset(S, 0, N); }
+inline void
+memZero(void* S, size_t N) {
+    ::memset(S, 0, N);
+}
 
 // Taken from google-protobuf stubs/common.h
 //
@@ -84,7 +92,11 @@ inline void memZero(void* S, size_t N) { ::memset(S, 0, N); }
 // implicit_cast would have been part of the C++ standard library,
 // but the proposal was submitted too late.  It will probably make
 // its way into the language in the future.
-template <typename To, typename From> inline To implicit_cast(From const& f) { return f; }
+template <typename To, typename From>
+inline To
+implicit_cast(From const& f) {
+    return f;
+}
 
 // When you upcast (that is, cast a pointer from type Foo to type
 // SuperclassOfFoo), it's fine to use implicit_cast<>, since upcasts
