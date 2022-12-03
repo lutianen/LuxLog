@@ -12,6 +12,7 @@
 #include "Timestamp.h"
 #include "CurrentThread.h" // tid
 
+#include <cstring>
 #include <ctime> // gmtime_r tm
 
 
@@ -64,6 +65,8 @@ const char* LogLevelName[static_cast<unsigned int>(Logger::LogLevel::NUM_LOG_LEV
     "FATAL",
 };
 
+// strlen
+constexpr int LogLevelStrLen = 5;
 
 // helper class for known string length at compile time
 class T {
@@ -125,7 +128,7 @@ Logger::Impl::Impl(LogLevel level, int savedErrno, const SourceFile& file, int l
     CurrentThread::tid();
     stream_ << T(CurrentThread::tidString(), static_cast<unsigned int>(CurrentThread::tidStringLength()));
 
-    stream_ << T(LogLevelName[static_cast<unsigned int>(level)], 6);
+    stream_ << T(LogLevelName[static_cast<unsigned int>(level)], LogLevelStrLen);
 
     // Format Change: xxx - Channel_test.cc:104 -> Channel_test.cc:104 - Channel_test.cc:104
     stream_ << basename_ << ':' << line_ << " -_- ";
