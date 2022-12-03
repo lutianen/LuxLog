@@ -67,6 +67,7 @@ const char* LogLevelName[static_cast<unsigned int>(Logger::LogLevel::NUM_LOG_LEV
 
 // strlen
 constexpr int LogLevelStrLen = 6;
+constexpr char MsgDelimiter[] = ">_< ";
 
 // helper class for known string length at compile time
 class T {
@@ -175,19 +176,20 @@ Logger::Impl::finish() {
     stream_ << "\n";
 }
 
-Logger::Logger(SourceFile file, int line) : impl_(LogLevel::INFO, 0, file, line) { impl_.stream_ << " >_< "; }
+Logger::Logger(SourceFile file, int line) : impl_(LogLevel::INFO, 0, file, line) { impl_.stream_ << MsgDelimiter; }
 
 Logger::Logger(SourceFile file, int line, LogLevel level, const char* func) : impl_(level, 0, file, line) {
     // impl_.stream_ << func << ' ';
-    impl_.stream_ << func << "(..) "
-                  << ">_< ";
+    impl_.stream_ << func << "(..) " << MsgDelimiter;
 }
 
-Logger::Logger(SourceFile file, int line, LogLevel level) : impl_(level, 0, file, line) { impl_.stream_ << " >_< "; }
+Logger::Logger(SourceFile file, int line, LogLevel level) : impl_(level, 0, file, line) {
+    impl_.stream_ << MsgDelimiter;
+}
 
 Logger::Logger(SourceFile file, int line, bool toAbort)
     : impl_(toAbort ? LogLevel::FATAL : LogLevel::ERROR, errno, file, line) {
-    impl_.stream_ << " >_< ";
+    impl_.stream_ << MsgDelimiter;
 }
 
 Logger::~Logger() {
