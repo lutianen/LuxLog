@@ -57,16 +57,16 @@ initLogLevel() {
 Logger::LogLevel g_logLevel = initLogLevel();
 
 const char* LogLevelName[static_cast<unsigned int>(Logger::LogLevel::NUM_LOG_LEVELS)] = {
-    "TRACE",
-    "DEBUG",
-    "INFO ",
-    "WARN ",
-    "ERROR",
-    "FATAL",
+    "TRACE ",
+    "DEBUG ",
+    "INFO  ",
+    "WARN  ",
+    "ERROR ",
+    "FATAL ",
 };
 
 // strlen
-constexpr int LogLevelStrLen = 5;
+constexpr int LogLevelStrLen = 6;
 
 // helper class for known string length at compile time
 class T {
@@ -131,7 +131,7 @@ Logger::Impl::Impl(LogLevel level, int savedErrno, const SourceFile& file, int l
     stream_ << T(LogLevelName[static_cast<unsigned int>(level)], LogLevelStrLen);
 
     // Format Change: xxx - Channel_test.cc:104 -> Channel_test.cc:104 - Channel_test.cc:104
-    stream_ << basename_ << ':' << line_ << " -_- ";
+    stream_ << basename_ << ':' << line_ << ' ';
 
     if (savedErrno != 0) {
         stream_ << strerror_tl(savedErrno) << " (errno=" << savedErrno << ") ";
@@ -175,17 +175,20 @@ Logger::Impl::finish() {
     stream_ << "\n";
 }
 
-Logger::Logger(SourceFile file, int line) : impl_(LogLevel::INFO, 0, file, line) {}
+Logger::Logger(SourceFile file, int line) : impl_(LogLevel::INFO, 0, file, line) { impl_.stream_ << " >_< "; }
 
 Logger::Logger(SourceFile file, int line, LogLevel level, const char* func) : impl_(level, 0, file, line) {
     // impl_.stream_ << func << ' ';
-    impl_.stream_ << func << "(..) ";
+    impl_.stream_ << func << "(..) "
+                  << ">_< ";
 }
 
-Logger::Logger(SourceFile file, int line, LogLevel level) : impl_(level, 0, file, line) {}
+Logger::Logger(SourceFile file, int line, LogLevel level) : impl_(level, 0, file, line) { impl_.stream_ << " >_< "; }
 
 Logger::Logger(SourceFile file, int line, bool toAbort)
-    : impl_(toAbort ? LogLevel::FATAL : LogLevel::ERROR, errno, file, line) {}
+    : impl_(toAbort ? LogLevel::FATAL : LogLevel::ERROR, errno, file, line) {
+    impl_.stream_ << " >_< ";
+}
 
 Logger::~Logger() {
     impl_.finish();

@@ -35,51 +35,70 @@ public:
 
     /// @brief Constucts a Timestamp at specific time
     /// @param secondsSinceEpochArg
-    explicit Timestamp(int64_t microSecondsSinceEpochArg)
-        : microSecondsSinceEpoch_(microSecondsSinceEpochArg) {}
+    explicit Timestamp(int64_t microSecondsSinceEpochArg) : microSecondsSinceEpoch_(microSecondsSinceEpochArg) {}
 
     /// @brief Swap timestamp with @c that
     /// @param that
-    inline void swap(Timestamp& that) {
+    inline void
+    swap(Timestamp& that) {
         std::swap(microSecondsSinceEpoch_, that.microSecondsSinceEpoch_);
     }
 
     // default copy/assignment/dtor are Okay
 
-    string toString() const;
-    string toFormattedString(bool showMicroSecond = false) const;
+    string
+    toString() const;
+    string
+    toFormattedString(bool showMicroSecond = false) const;
 
     /// @brief valid - validate Timestamp
     /// @return microSecondsSinceEpoch_ > 0 ? ture : false
-    inline bool valid() const { return microSecondsSinceEpoch_ > 0; }
+    inline bool
+    valid() const {
+        return microSecondsSinceEpoch_ > 0;
+    }
 
     /// @brief for internal usage.
     /// @return
-    inline int64_t microSecondsSinceEpoch() const { return microSecondsSinceEpoch_; }
-    time_t secondsSinceEpoch() const {
+    inline int64_t
+    microSecondsSinceEpoch() const {
+        return microSecondsSinceEpoch_;
+    }
+    time_t
+    secondsSinceEpoch() const {
         return static_cast<time_t>(microSecondsSinceEpoch_ / kMicroSecondsPerSecond);
     }
 
     ///
     /// Get time of now.
     ///
-    static Timestamp now();
-    static Timestamp invalid() { return Timestamp(); }
+    static Timestamp
+    now();
+    static Timestamp
+    invalid() {
+        return Timestamp();
+    }
 
 
-    static inline Timestamp fromUnixTime(time_t t) { return fromUnixTime(t, 0); }
+    static inline Timestamp
+    fromUnixTime(time_t t) {
+        return fromUnixTime(t, 0);
+    }
 
-    static inline Timestamp fromUnixTime(time_t t, int microseconds) {
+    static inline Timestamp
+    fromUnixTime(time_t t, int microseconds) {
         return Timestamp(static_cast<int64_t>(t) * kMicroSecondsPerSecond + microseconds);
     }
 };
 
 
-inline bool operator<(Timestamp lhs, Timestamp rhs) {
+inline bool
+operator<(Timestamp lhs, Timestamp rhs) {
     return lhs.microSecondsSinceEpoch() < rhs.microSecondsSinceEpoch();
 }
 
-inline bool operator==(Timestamp lhs, Timestamp rhs) {
+inline bool
+operator==(Timestamp lhs, Timestamp rhs) {
     return lhs.microSecondsSinceEpoch() == rhs.microSecondsSinceEpoch();
 }
 
@@ -88,7 +107,8 @@ inline bool operator==(Timestamp lhs, Timestamp rhs) {
 ///
 /// @param high, low
 /// @return (high-low) in seconds
-inline double timeDifference(Timestamp high, Timestamp low) {
+inline double
+timeDifference(Timestamp high, Timestamp low) {
     return static_cast<double>(high.microSecondsSinceEpoch() - low.microSecondsSinceEpoch()) /
            Timestamp::kMicroSecondsPerSecond;
 }
@@ -98,9 +118,10 @@ inline double timeDifference(Timestamp high, Timestamp low) {
 ///
 /// @return timestamp+seconds as Timestamp
 ///
-inline Timestamp addTime(Timestamp timestamp, double seconds) {
-    return Timestamp(timestamp.secondsSinceEpoch() +
-                     static_cast<int64_t>(seconds * Timestamp::kMicroSecondsPerSecond));
+inline Timestamp
+addTime(Timestamp timestamp, double seconds) {
+    auto delta = static_cast<int64_t>(seconds * Timestamp::kMicroSecondsPerSecond);
+    return Timestamp(timestamp.microSecondsSinceEpoch() + delta);
 }
 } // namespace Lux
 
