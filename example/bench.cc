@@ -50,27 +50,32 @@ int main(int argc, char** argv) {
 
     printf("pid=%d, tid=%d\n", ::getpid(), Lux::CurrentThread::tid());
 
-    Lux::Thread t1(test_performance);
-    Lux::Thread t2(test_performance);
-    Lux::Thread t3(test_performance);
-    Lux::Thread t4(test_performance);
-    Lux::Thread t5(test_performance);
-    Lux::Thread t6(test_performance);
-    Lux::Thread t7(test_performance);
+    // Single Thread
+    for (int i = 0; i < 10; i++)
+        test_performance();
 
-    t1.start();
-    t2.start();
-    t3.start();
-    t4.start();
-    t5.start();
-    t6.start();
-    t7.start();
+    // More Theads
+    // Lux::Thread t1(test_performance);
+    // Lux::Thread t2(test_performance);
+    // Lux::Thread t3(test_performance);
+    // Lux::Thread t4(test_performance);
+    // Lux::Thread t5(test_performance);
+    // Lux::Thread t6(test_performance);
+    // Lux::Thread t7(test_performance);
 
-    t1.join();
-    t2.join();
-    t3.join();
-    t4.join();
-    t5.join();
-    t6.join();
-    t7.join();
+    // t1.start();
+    // t2.start();
+    // t3.start();
+    // t4.start();
+    // t5.start();
+    // t6.start();
+    // t7.start();
+
+    // t1.join();
+    // t2.join();
+    // t3.join();
+    // t4.join();
+    // t5.join();
+    // t6.join();
+    // t7.join();
 }

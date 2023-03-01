@@ -90,6 +90,11 @@ int main(int argc, char** argv) {
 
     printf("pid=%d, tid=%d\n", ::getpid(), Lux::CurrentThread::tid());
 
+    // // Single Thread
+    // for (int i = 0; i < 10; i++)
+    //     test_performance();
+
+    More Theads
     Lux::Thread t1(test_performance);
     Lux::Thread t2(test_performance);
     Lux::Thread t3(test_performance);
